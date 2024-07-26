@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
 from fastapi.logger import logger
 import os
 
@@ -33,6 +33,15 @@ async def upload_file(request: Request):
         logger.error(f"Error saving file: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
+@app.get("/get_image")
+async def get_image():
+    file_location = os.path.join(UPLOAD_DIRECTORY, "image.jpg")
+
+    if not os.path.exists(file_location):
+        logger.error("File not found")
+        raise HTTPException(status_code=404, detail="File not found")
+
+    return FileResponse(file_location, media_type='image/jpg')
 
 if __name__ == "__main__":
     import uvicorn
